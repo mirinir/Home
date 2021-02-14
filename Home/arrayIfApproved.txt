@@ -1,7 +1,7 @@
 { 
-    "Netivot":"approved",
+    "Netivot":"unapproved",
     "Jerusalem":"unapproved",
-    "Birkirkara":"approved",
+    "Birkirkara":"unapproved",
     "Zawiya":"unapproved",
     "Gharyan":"approved",
     "Pozzallo":"unapproved",
@@ -13,6 +13,5 @@
     "Hifa":"approved",
     "Cholon":"approved",
     "Hadera":"approved",
-    "Rechovot":"unapproved"
-
+    "Rechovot":"approved"
 }

@@ -4,6 +4,7 @@ const router = express.Router();
 
 const fs = require('fs');
 const { resolve } = require('path');
+const readline = require('readline');
 
 router.post('/sherchByCityAndDate', async (req, res) => {
     const { date, city } = req.body
@@ -13,7 +14,19 @@ router.post('/sherchByCityAndDate', async (req, res) => {
 
         const item = arrCities.filter(x => x.name === city && x.dt === date)
         if (item[0]) {
-            res.send(item[0].main)
+            const file = './arrayIfApproved.txt'
+            const line = '"' + city + '":"' + "approved" + '"'
+
+            checkIfApproved(file, line).then((data) => {
+                if (data) {
+                    res.send(item[0].main)
+                }
+                else {
+                    res.send("Sorry!! but there is no access to city data.")
+                }
+
+            })
+
         }
         else {
             res.send("no data")
@@ -33,11 +46,12 @@ router.post('/admin', async (req, res) => {
     try {
         const data = await fs.promises.readFile('./arrayIfApproved.txt', 'utf8')
         const arrCities = (JSON.parse(data))
-
+        console.log("arrCitiesApproved: ", arrCitiesApproved)
         for (let item in arrCitiesApproved) {
 
             index = '"' + item + '":"' + arrCities[item] + '"'
             newItem = '"' + item + '":"' + arrCitiesApproved[item] + '"'
+            console.log("index: ", index)
             await chenge1Line('./arrayIfApproved.txt', index, newItem)
                 .then((data) => {
                     if (data) {
@@ -48,7 +62,7 @@ router.post('/admin', async (req, res) => {
                         res.send("not change")
                     }
                 })
-             }
+        }
     }
     catch (err) {
         console.log(err)
@@ -74,5 +88,26 @@ const chenge1Line = async (file, oldItem, newItem) => {
             console.log(err)
         }
         resolve(formatted)
-    }).catch((err)=>{rejact(err)})
+    }).catch((err) => { rejact(err) })
+}
+
+const checkIfApproved = async (myFile, myLine) => {
+    return new Promise((resolve, rejact) => {
+        var data = null
+        let file = fs.readFileSync(myFile, "utf8");
+        let arr = file.split(/\r?\n/);
+        arr.forEach((line, idx) => {
+            if (line.includes(myLine)) {
+                console.log((idx + 1) + ':' + line);
+                console.log("line: ", line)
+                data = line
+            }
+        })
+        if (data) {
+            resolve("ok")
+        } else {
+            resolve(null)
+        }
+
+    })
 }
